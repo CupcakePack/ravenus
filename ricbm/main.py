@@ -20,16 +20,15 @@ def execute_turn() -> None:
         if ct.can_split(child_size):
             ct.do_split(child_size)
             return
-    """Step onto the first open neighbouring tile."""
+    
     here = ct.get_position()
     here_tile = ct.get_tile(here)
 
     directions = Direction.get_direction_list()
     random.shuffle(directions)
     # ct.output_log(*directions)
-
+    safe = []
     for direction in directions:
-        
         edge = here_tile.get_edge(direction).get_edge_type()
         if edge == EdgeType.KELP:
             continue
@@ -37,11 +36,12 @@ def execute_turn() -> None:
         ahead = ct.get_tile(here.add_dir(direction))
         if ahead.get_dragon() is not None:
             continue
+        safe.append(direction)
         if ahead.has_pearl():
             ct.make_move(direction)
             return
-        # ct.output_log("Moving in", direction)
-        ct.make_move(direction)
+    if safe:
+        ct.make_move(safe[0])
         return
     
     if ct.get_length() >= 4 and ct.can_split(ct.get_length() // 2):
